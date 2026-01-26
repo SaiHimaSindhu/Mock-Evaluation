@@ -1,4 +1,4 @@
-const supabase = require('../supabaseClient');
+const supabase = require('../supabaseClient.js');
 
 exports.registerCustomer = async (req, res) => {
   try {
@@ -6,13 +6,11 @@ exports.registerCustomer = async (req, res) => {
 
     const { data, error } = await supabase
       .from('customers')
-      .insert([{ full_name, email, phone }]);
+      .insert([{ full_name, email, phone }])
+      .select();   // 🔥 very important
 
     if (error) {
-      if (error.message.includes('duplicate')) {
-        return res.status(409).json({ error: "Email already exists" });
-      }
-      throw error;
+      return res.status(400).json({ error: error.message });
     }
 
     res.status(201).json(data);
